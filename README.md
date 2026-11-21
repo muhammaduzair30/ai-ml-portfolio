@@ -36,7 +36,22 @@ Interactive node-graph visualizers breaking down Uzair's production systems:
 - **Enterprise CCTV Video Analytics**: End-to-end RTSP video ingestion, frame batching, D-FINE-N detector, ByteTrack tracker, and spatial rule engine.
 - **DocMind AI Architecture**: Async background embeddings, semantic chunking, dual pgvector + full-text indices, and RRF ranker.
 
-### 4. ⚡ The Edge Engineering Superpower: Why Flutter in AI?
+### 4. 📊 Verified System Telemetry & MLOps Latency Matrix
+- **Empirical Execution Traces**: Detailed millisecond breakdown of real-world production pipelines (CCTV 31.5ms trace, Hybrid RAG 125ms trace, AI Telephony <295ms turnaround).
+- **Interactive MLOps Economics Calculator**: Dynamic simulator evaluating cost vs latency across Frontier APIs (GPT-4o), Groq LPU, and Self-Hosted GPU clusters (vLLM / TensorRT-LLM).
+
+### 5. 📚 Engineering Case Studies & R&D Deep Dives
+Rigorous technical writeups documenting architectural solutions, mathematical formulations, and production trade-offs:
+- *Why ByteTrack Beats DeepSORT on Occluded CCTV Surveillance (Dual-Threshold Kalman Filtering)*
+- *Dense Vectors Aren't Enough: Production Hybrid RAG with Reciprocal Rank Fusion (RRF)*
+- *Engineering Zero-Lag Interruption-Aware Real-Time Voice Agents (AsyncIO Cancellation)*
+- *Compiling Deep Learning to Cross-Platform Flutter Edge Clients (Dart FFI & ONNX Runtime)*
+
+### 6. 🎛️ Spotlight Command Palette (⌘K) & Web Audio Synthesizer
+- **Command Palette**: Instant keyboard-driven navigation (`Ctrl+K` / `Cmd+K`) to jump across simulations, download CV, trigger actions, or filter by technology.
+- **Dynamic Web Audio Synthesizer**: 0-bundle overhead cybernetic sound effects (tactile clicks, radar alerts, frequency sweeps) with real-time mute toggle.
+
+### 7. ⚡ The Edge Engineering Superpower: Why Flutter in AI?
 Most AI engineers train models in Python and leave them behind REST APIs. Uzair bridges deep learning models directly into native cross-platform clients using **Flutter and Dart**.
 - **Direct Sensor & Camera Integration**: Real-time camera stream feeds for on-device computer vision (YOLOv8, D-FINE-N).
 - **Cross-Platform Native Deployment**: A single codebase delivering iOS, Android, and Windows production apps.

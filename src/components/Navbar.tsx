@@ -8,23 +8,34 @@ import {
   Terminal, 
   Layers, 
   Cpu, 
-  User, 
   Mail,
   Smartphone,
   ExternalLink,
-  Activity
+  Activity,
+  Search,
+  Volume2,
+  VolumeX,
+  BookOpen
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { personalInfo } from '../data/portfolioData';
+import { soundEffects } from '../utils/soundEffects';
 
 interface NavbarProps {
   perspective: 'ai' | 'fullstack';
   onTogglePerspective: (p: 'ai' | 'fullstack') => void;
+  onOpenCommandPalette: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  perspective, 
+  onTogglePerspective,
+  onOpenCommandPalette 
+}) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(soundEffects.getIsMuted());
+  const [timeStr, setTimeStr] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,7 +45,28 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        const now = new Date();
+        const options: Intl.DateTimeFormatOptions = {
+          timeZone: 'Asia/Karachi',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        };
+        setTimeStr(new Intl.DateTimeFormat('en-US', options).format(now));
+      } catch {
+        setTimeStr('PKT');
+      }
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleDownloadCV = () => {
+    soundEffects.playSuccess();
     confetti({
       particleCount: 50,
       spread: 60,
@@ -43,32 +75,38 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
     });
   };
 
+  const handleToggleSound = () => {
+    const muted = soundEffects.toggleMute();
+    setIsMuted(muted);
+  };
+
   const navLinks = [
     { name: 'AI Lab', href: '#ai-lab', icon: Activity },
     { name: 'Blueprints', href: '#blueprints', icon: BrainCircuit },
+    { name: 'Telemetry', href: '#telemetry', icon: Cpu },
+    { name: 'Research', href: '#research', icon: BookOpen },
     { name: 'Projects', href: '#projects', icon: Layers },
     { name: 'Experience', href: '#experience', icon: Terminal },
-    { name: 'Skills', href: '#skills', icon: Cpu },
-    { name: 'About', href: '#about', icon: User },
     { name: 'Contact', href: '#contact', icon: Mail },
   ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-3 pb-2 transition-all duration-300">
       <nav 
-        className={`w-full max-w-6xl rounded-2xl transition-all duration-300 flex items-center justify-between px-4 sm:px-6 py-2.5 ${
+        className={`w-full max-w-7xl rounded-2xl transition-all duration-300 flex items-center justify-between px-3 sm:px-5 py-2.5 ${
           scrolled 
-            ? 'bg-[#060a14]/90 backdrop-blur-2xl border border-cyan-500/20 shadow-2xl shadow-cyan-950/30' 
-            : 'bg-[#060a14]/65 backdrop-blur-xl border border-white/10'
+            ? 'bg-[#060a14]/92 backdrop-blur-2xl border border-cyan-500/25 shadow-2xl shadow-cyan-950/40' 
+            : 'bg-[#060a14]/75 backdrop-blur-xl border border-white/10'
         }`}
       >
-        {/* Brand / Logo (Clean, zero line-wrapping bug) */}
+        {/* Brand / Logo */}
         <a 
           href="#" 
-          className="group flex items-center gap-3 text-white"
+          onClick={() => soundEffects.playBlip(750, 0.04)}
+          className="group flex items-center gap-2.5 text-white shrink-0"
         >
-          <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/25 via-blue-600/20 to-purple-600/25 border border-cyan-400/40 group-hover:border-cyan-400 transition-colors shadow-sm shadow-cyan-500/20">
-            <span className="text-cyan-300 font-extrabold font-mono text-sm tracking-tighter">MU</span>
+          <div className="relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-cyan-500/25 via-blue-600/20 to-purple-600/25 border border-cyan-400/40 group-hover:border-cyan-400 transition-colors shadow-sm shadow-cyan-500/20">
+            <span className="text-cyan-300 font-extrabold font-mono text-xs sm:text-sm tracking-tighter">MU</span>
             <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
@@ -76,29 +114,37 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
           </div>
 
           <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold tracking-tight text-white group-hover:text-cyan-300 transition-colors whitespace-nowrap">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs sm:text-sm font-bold tracking-tight text-white group-hover:text-cyan-300 transition-colors whitespace-nowrap">
                 Muhammad Uzair
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 whitespace-nowrap font-semibold">
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 whitespace-nowrap font-semibold">
                 AI / ML
               </span>
             </div>
-            <span className="text-[11px] text-slate-400 font-mono leading-none mt-0.5">
-              R&D Engineer
-            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[10px] text-slate-400 font-mono leading-none">
+                R&D Engineer
+              </span>
+              {timeStr && (
+                <span className="hidden xl:inline text-[9px] font-mono text-emerald-400/90 leading-none">
+                  • PKT {timeStr}
+                </span>
+              )}
+            </div>
           </div>
         </a>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0.5">
           {navLinks.map((link) => {
             const Icon = link.icon;
             return (
               <a
                 key={link.name}
                 href={link.href}
-                className="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-1.5 group"
+                onClick={() => soundEffects.playBlip(800, 0.03)}
+                className="px-2.5 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-1.5 group whitespace-nowrap"
               >
                 <Icon className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-400 transition-colors" />
                 <span>{link.name}</span>
@@ -107,33 +153,67 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
           })}
         </div>
 
-        {/* Right Section: Compact Perspective Controller & CV Download */}
-        <div className="flex items-center gap-3">
+        {/* Right Section Tools */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Spotlight Search (Cmd+K) Trigger */}
+          <button
+            onClick={() => {
+              soundEffects.playScan(450, 850, 0.07);
+              onOpenCommandPalette();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-300 transition-all text-xs font-mono group"
+            title="Search Commands & Projects (Ctrl+K / Cmd+K)"
+          >
+            <Search className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline text-[11px] text-slate-300">Quick Actions</span>
+            <kbd className="hidden sm:inline text-[9px] bg-slate-800 text-slate-400 px-1 py-0.5 rounded border border-slate-700">⌘K</kbd>
+          </button>
+
+          {/* Sound FX Mute Toggle */}
+          <button
+            onClick={handleToggleSound}
+            className="p-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-300 transition-all"
+            title={isMuted ? 'Unmute Futuristic Sound FX' : 'Mute Sound FX'}
+            aria-label="Toggle sound effects"
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4 text-slate-500" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-cyan-400" />
+            )}
+          </button>
+
           {/* Dual Perspective Toggle */}
-          <div className="hidden lg:flex items-center p-1 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono">
+          <div className="hidden xl:flex items-center p-0.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] font-mono">
             <button
-              onClick={() => onTogglePerspective('ai')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all duration-200 ${
+              onClick={() => {
+                soundEffects.playBlip(700, 0.04);
+                onTogglePerspective('ai');
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all duration-200 ${
                 perspective === 'ai'
                   ? 'bg-gradient-to-r from-cyan-500/25 to-blue-500/25 text-cyan-300 border border-cyan-500/40 shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Focus on Core AI / LLMs / Computer Vision"
             >
-              <BrainCircuit className="w-3.5 h-3.5 text-cyan-400" />
+              <BrainCircuit className="w-3 h-3 text-cyan-400" />
               <span>AI Core</span>
             </button>
             <button
-              onClick={() => onTogglePerspective('fullstack')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all duration-200 ${
+              onClick={() => {
+                soundEffects.playBlip(700, 0.04);
+                onTogglePerspective('fullstack');
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all duration-200 ${
                 perspective === 'fullstack'
                   ? 'bg-gradient-to-r from-purple-500/25 to-emerald-500/25 text-purple-300 border border-purple-500/40 shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Highlight Edge AI & Flutter Client Deployments"
             >
-              <Smartphone className="w-3.5 h-3.5 text-purple-400" />
-              <span>Edge & Flutter</span>
+              <Smartphone className="w-3 h-3 text-purple-400" />
+              <span>Edge</span>
             </button>
           </div>
 
@@ -142,20 +222,20 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
             href={personalInfo.cvUrl}
             download="Muhammad_Uzair_AI_ML_CV.pdf"
             onClick={handleDownloadCV}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-medium text-xs hover:opacity-95 shadow-md shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 group"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white font-medium text-xs hover:opacity-95 shadow-md shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 group"
           >
             <FileText className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
             <span className="font-semibold">CV</span>
-            <span className="hidden sm:inline text-[10px] opacity-80 font-mono">PDF</span>
+            <span className="hidden sm:inline text-[9px] opacity-80 font-mono">PDF</span>
           </a>
 
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+            className="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
       </nav>
@@ -168,12 +248,13 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed top-20 left-4 right-4 bg-[#080d19]/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 shadow-2xl z-50 flex flex-col gap-4"
+            className="lg:hidden fixed top-20 left-4 right-4 bg-[#080d19]/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 shadow-2xl z-50 flex flex-col gap-4"
           >
             {/* Perspective Selector for Mobile */}
             <div className="flex items-center justify-between p-1 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-mono">
               <button
                 onClick={() => {
+                  soundEffects.playBlip();
                   onTogglePerspective('ai');
                   setMobileMenuOpen(false);
                 }}
@@ -186,6 +267,7 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
               </button>
               <button
                 onClick={() => {
+                  soundEffects.playBlip();
                   onTogglePerspective('fullstack');
                   setMobileMenuOpen(false);
                 }}
@@ -205,7 +287,10 @@ export const Navbar: React.FC<NavbarProps> = ({ perspective, onTogglePerspective
                   <a
                     key={link.name}
                     href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => {
+                      soundEffects.playBlip();
+                      setMobileMenuOpen(false);
+                    }}
                     className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-200 hover:bg-white/5 hover:text-cyan-400 text-sm font-medium transition-colors"
                   >
                     <Icon className="w-4 h-4 text-cyan-400" />

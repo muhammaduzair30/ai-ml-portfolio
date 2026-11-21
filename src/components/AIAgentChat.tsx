@@ -46,6 +46,12 @@ export const AIAgentChat: React.FC = () => {
     }
   }, [messages, isOpen]);
 
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('open-uzair-chat', handleOpenChat);
+    return () => window.removeEventListener('open-uzair-chat', handleOpenChat);
+  }, []);
+
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || input).trim();
     if (!text || isLoading) return;
